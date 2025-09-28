@@ -375,8 +375,8 @@ export default {
       }
     };
 
-    const handleAvatarUpload = async (event: Event) => {
-      const target = event.target as HTMLInputElement;
+    const handleAvatarUpload = async (event) => {
+      const target = event.target;
       const file = target.files?.[0];
 
       if (!file) return;
@@ -388,7 +388,7 @@ export default {
       }
 
       // Validate file type
-      if (!file.type.startsWith('image/')) {
+      if (!file.type.startsWith("image/")) {
         alert("Vui lòng chọn file ảnh.");
         return;
       }
@@ -403,7 +403,7 @@ export default {
         localStorage.setItem("user", JSON.stringify(updatedUser));
 
         alert("Ảnh đại diện đã được cập nhật thành công!");
-      } catch (error: any) {
+      } catch (error) {
         console.error("Avatar upload error:", error);
         alert("Có lỗi xảy ra khi upload ảnh đại diện!");
       } finally {
@@ -425,7 +425,7 @@ export default {
 
         // Show success message
         alert("Thông tin đã được cập nhật thành công!");
-      } catch (error: any) {
+      } catch (error) {
         if (error.response?.data?.errors) {
           errors.value = error.response.data.errors;
         } else {
@@ -446,7 +446,7 @@ export default {
           passwordForm.value.password_confirmation
         ) {
           passwordErrors.value = {
-            password_confirmation: ["Mật khẩu xác nhận không khớp"]
+            password_confirmation: ["Mật khẩu xác nhận không khớp"],
           };
           return;
         }
@@ -463,7 +463,7 @@ export default {
         } else {
           alert(result.error);
         }
-      } catch (error: any) {
+      } catch (error) {
         if (error.response?.data?.errors) {
           passwordErrors.value = error.response.data.errors;
         } else {
