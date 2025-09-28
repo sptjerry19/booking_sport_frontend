@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 mt-10">
     <!-- Hero Section -->
     <section class="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
@@ -74,24 +74,28 @@
     <!-- Popular Sports -->
     <section class="py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">
+        <h2
+          class="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12"
+        >
           Môn thể thao phổ biến
         </h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div
             v-for="sport in popularSports"
-            :key="sport.type"
-            @click="searchBySport(sport.type)"
+            :key="sport.id"
+            @click="searchBySport(sport.id)"
             class="text-center cursor-pointer group hover:transform hover:scale-105 transition-all duration-300"
           >
             <div
-              class="bg-white rounded-full p-8 shadow-lg mb-4 group-hover:shadow-xl"
+              class="bg-white dark:bg-gray-800 rounded-full p-8 shadow-lg mb-4 group-hover:shadow-xl"
             >
               <div class="text-4xl mb-2">{{ sport.icon }}</div>
-              <h3 class="text-lg font-semibold text-gray-900">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ sport.name }}
               </h3>
-              <p class="text-sm text-gray-500 mt-2">{{ sport.count }}+ sân</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                {{ sport.bookings_count }}+ sân
+              </p>
             </div>
           </div>
         </div>
@@ -99,13 +103,13 @@
     </section>
 
     <!-- Featured Venues -->
-    <section class="py-16 bg-white">
+    <section class="py-16 bg-white dark:bg-gray-800">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold text-gray-900 mb-4">
+          <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             Sân được ưa chuộng
           </h2>
-          <p class="text-lg text-gray-600">
+          <p class="text-lg text-gray-600 dark:text-gray-300">
             Những địa điểm có rating cao và được đánh giá tốt
           </p>
         </div>
@@ -148,10 +152,10 @@
     </section>
 
     <!-- Features -->
-    <section class="py-16 bg-gray-50">
+    <section class="py-16 bg-gray-50 dark:bg-gray-900">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold text-gray-900 mb-4">
+          <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             Tại sao chọn chúng tôi?
           </h2>
         </div>
@@ -171,10 +175,12 @@
                 />
               </svg>
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">
+            <h3
+              class="text-xl font-semibold text-gray-900 dark:text-white mb-2"
+            >
               Đặt sân nhanh chóng
             </h3>
-            <p class="text-gray-600">
+            <p class="text-gray-600 dark:text-gray-300">
               Tìm và đặt sân chỉ trong vài phút với giao diện thân thiện
             </p>
           </div>
@@ -193,10 +199,12 @@
                 />
               </svg>
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">
+            <h3
+              class="text-xl font-semibold text-gray-900 dark:text-white mb-2"
+            >
               Thanh toán an toàn
             </h3>
-            <p class="text-gray-600">
+            <p class="text-gray-600 dark:text-gray-300">
               Hỗ trợ nhiều phương thức thanh toán với bảo mật cao
             </p>
           </div>
@@ -215,10 +223,12 @@
                 />
               </svg>
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">
+            <h3
+              class="text-xl font-semibold text-gray-900 dark:text-white mb-2"
+            >
               Hỗ trợ 24/7
             </h3>
-            <p class="text-gray-600">
+            <p class="text-gray-600 dark:text-gray-300">
               Đội ngũ hỗ trợ khách hàng luôn sẵn sàng giúp đỡ bạn
             </p>
           </div>
@@ -311,6 +321,7 @@ export default {
       try {
         const response = await api.getSportsPopular();
         popularSports.value = response.data.data || [];
+        console.log(popularSports.value);
       } catch (error) {
         console.error("Failed to load popular sports:", error);
       }
@@ -328,8 +339,8 @@ export default {
       router.push(`/venues?${query.toString()}`);
     };
 
-    const searchBySport = (sportType) => {
-      router.push(`/venues?sport_id=${sportType.id}`);
+    const searchBySport = (sportId) => {
+      router.push(`/venues?sport_id=${sportId}`);
     };
 
     // Initialize

@@ -54,17 +54,16 @@ apiClient.interceptors.response.use(
       // Clear auth data
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-
       // Redirect to login if not already there
-      if (window.location.pathname !== "/auth/login") {
-        window.location.href = "/auth/login";
-      }
+      // if (window.location.pathname !== "/auth/login") {
+      //   window.location.href = "/auth/login";
+      // }
     }
 
     // Handle 403 Forbidden
-    if (error.response?.status === 403) {
-      console.error("Access denied:", error.response.data?.message);
-    }
+    // if (error.response?.status === 403) {
+    //   console.error("Access denied:", error.response.data?.message);
+    // }
 
     return Promise.reject(error);
   }

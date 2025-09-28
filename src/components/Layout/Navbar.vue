@@ -1,5 +1,7 @@
 <template>
-  <nav class="bg-white shadow-sm border-b">
+  <nav
+    class="bg-white dark:bg-gray-800 shadow-sm border-b dark:border-gray-700 fixed top-0 left-0 right-0 z-50"
+  >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16">
         <!-- Logo and Navigation -->
@@ -20,7 +22,9 @@
                   />
                 </svg>
               </div>
-              <span class="text-xl font-bold text-gray-900">BookingSport</span>
+              <span class="text-xl font-bold text-gray-900 dark:text-white"
+                >BookingSport</span
+              >
             </RouterLink>
           </div>
 
@@ -31,8 +35,8 @@
               class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors"
               :class="
                 $route.name === 'Home'
-                  ? 'border-blue-500 text-gray-900'
-                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                  ? 'border-blue-500 text-gray-900 dark:text-white'
+                  : 'border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200'
               "
             >
               Trang chủ
@@ -78,6 +82,16 @@
 
         <!-- Right side buttons -->
         <div class="flex items-center space-x-4">
+          <!-- Dark Mode Toggle -->
+          <div class="dark-mode-toggle">
+            <input
+              type="checkbox"
+              :checked="isDark"
+              @change="toggleDarkMode"
+              class="switch"
+            />
+          </div>
+
           <!-- Search Button -->
           <button
             @click="showSearch = !showSearch"
@@ -399,6 +413,7 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuth } from "@/composables/useAuth";
+import { useDarkMode } from "@/composables/useDarkMode";
 import NotificationBell from "@/components/UI/NotificationBell.vue";
 
 export default {
@@ -409,6 +424,7 @@ export default {
   setup() {
     const router = useRouter();
     const auth = useAuth();
+    const { isDark, toggleDarkMode } = useDarkMode();
 
     // Reactive state
     const showMobileMenu = ref(false);
@@ -468,9 +484,171 @@ export default {
       isAuthenticated,
       user,
       isOwner,
+      isDark,
+      toggleDarkMode,
       handleLogout,
       performSearch,
     };
   },
 };
 </script>
+
+<style scoped>
+.dark-mode-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.switch {
+  position: relative;
+  width: 50px;
+  height: 20px;
+  margin: 0px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-radius: 10px;
+  box-shadow: inset 0px 0px 2px rgba(255, 255, 255, 0.7);
+  transition: background-image 0.7s ease-in-out;
+  outline: none;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.switch:checked {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  background-size: cover;
+  transition: background-image 1s ease-in-out;
+}
+
+.switch:after {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #fff;
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  transform: translateX(0px);
+  animation: off 0.7s forwards cubic-bezier(0.8, 0.5, 0.2, 1.4);
+  box-shadow: inset 2px -2px 2px rgba(53, 53, 53, 0.3);
+}
+
+.switch:checked:after {
+  animation: on 0.7s forwards cubic-bezier(0.8, 0.5, 0.2, 1.4);
+  box-shadow: inset -2px -2px 2px rgba(53, 53, 53, 0.3);
+}
+
+@keyframes off {
+  0% {
+    transform: translateX(30px);
+    width: 16px;
+  }
+  50% {
+    width: 25px;
+    border-radius: 10px;
+  }
+  100% {
+    transform: translateX(0px);
+    width: 16px;
+  }
+}
+
+@keyframes on {
+  0% {
+    transform: translateX(0px);
+    width: 16px;
+  }
+  50% {
+    width: 25px;
+    border-radius: 10px;
+  }
+  100% {
+    transform: translateX(30px);
+    width: 16px;
+  }
+}
+
+.switch:checked:before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  transform-origin: 20px 4px;
+  background-color: transparent;
+  box-shadow: 2px -1px 0px #fff;
+  filter: blur(0px);
+  animation: sun 0.7s forwards ease;
+}
+
+@keyframes sun {
+  0% {
+    transform: rotate(170deg);
+    background-color: transparent;
+    box-shadow: 2px -1px 0px #fff;
+    filter: blur(0px);
+  }
+  50% {
+    background-color: transparent;
+    box-shadow: 2px -1px 0px #fff;
+    filter: blur(0px);
+  }
+  90% {
+    background-color: #f5daaa;
+    box-shadow: 0px 0px 4px #f5deb4, 0px 0px 8px #f5deb4, 0px 0px 12px #f5deb4,
+      inset 0px 0px 1px #efd3a3;
+    filter: blur(1px);
+  }
+  100% {
+    transform: rotate(0deg);
+    background-color: #f5daaa;
+    box-shadow: 0px 0px 4px #f5deb4, 0px 0px 8px #f5deb4, 0px 0px 12px #f5deb4,
+      inset 0px 0px 1px #efd3a3;
+    filter: blur(1px);
+  }
+}
+
+.switch:before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  filter: blur(1px);
+  background-color: #f5daaa;
+  box-shadow: 0px 0px 4px #f5deb4, 0px 0px 8px #f5deb4, 0px 0px 12px #f5deb4,
+    inset 0px 0px 1px #efd3a3;
+  transform-origin: 20px 4px;
+  animation: moon 0.7s forwards ease;
+}
+
+@keyframes moon {
+  0% {
+    transform: rotate(0deg);
+    filter: blur(1px);
+  }
+  50% {
+    filter: blur(1px);
+  }
+  90% {
+    background-color: transparent;
+    box-shadow: 2px -1px 0px #fff;
+    filter: blur(0px);
+  }
+  100% {
+    transform: rotate(170deg);
+    background-color: transparent;
+    box-shadow: 2px -1px 0px #fff;
+    filter: blur(0px);
+  }
+}
+</style>

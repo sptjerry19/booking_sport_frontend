@@ -389,6 +389,11 @@ export default {
         });
 
         if (result.success) {
+          console.log(result);
+          // localStorage.setItem("token", result.data.token);
+          // localStorage.setItem("user", JSON.stringify(result.data.user));
+          auth.user.value = result.data.user;
+
           // Redirect to dashboard or intended page
           const redirectTo = router.currentRoute.value.query.redirect || "/";
           router.push(redirectTo);

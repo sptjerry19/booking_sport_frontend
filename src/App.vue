@@ -1,7 +1,16 @@
 <script setup>
 import { RouterView } from "vue-router";
+import { onMounted } from "vue";
 import Navbar from "./components/Layout/Navbar.vue";
 import NotificationPermission from "./components/UI/NotificationPermission.vue";
+import { useDarkMode } from "./composables/useDarkMode";
+
+// Khởi tạo dark mode
+const { initializeDarkMode } = useDarkMode();
+
+onMounted(() => {
+  initializeDarkMode();
+});
 </script>
 
 <template>

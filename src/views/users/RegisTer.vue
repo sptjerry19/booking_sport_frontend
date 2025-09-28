@@ -120,8 +120,8 @@ export default {
         .post(this.$store.state.UrlServe + "/register", formData)
         .then((response) => {
           console.log(response.data.token);
-          this.$store.dispatch("saveToken", response.data.token);
-          localStorage.setItem("token", response.data.token);
+          this.$store.dispatch("saveToken", response.data.data.token);
+          localStorage.setItem("token", response.data.data.token);
           this.$router.push({ path: "/home" });
           // Reset the form
           this.name = "";

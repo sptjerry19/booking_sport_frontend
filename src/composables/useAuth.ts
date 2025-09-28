@@ -28,11 +28,7 @@ export const useAuth = () => {
       store.commit("auth/SET_LOADING", true);
       const response = await api.login(credentials);
 
-      console.log("124jahsfjkahsjkfhaksjfa", response.data.data);
-
       const { user: userData, token: userToken } = response.data.data;
-
-      console.log(userData, userToken);
 
       // Lưu token và user info
       localStorage.setItem("token", userToken);
@@ -60,7 +56,7 @@ export const useAuth = () => {
       store.commit("auth/SET_LOADING", true);
       const response = await api.register(data);
 
-      const { user: userData, token: userToken } = response.data;
+      const { user: userData, token: userToken } = response.data.data;
 
       // Lưu token và user info
       localStorage.setItem("token", userToken);
@@ -116,7 +112,7 @@ export const useAuth = () => {
   const refreshToken = async () => {
     try {
       const response = await api.refreshToken();
-      const { token: newToken } = response.data;
+      const { token: newToken } = response.data.data;
 
       // Update token
       localStorage.setItem("token", newToken);
@@ -183,7 +179,7 @@ export const useAuth = () => {
   const getCurrentUser = async () => {
     try {
       const response = await api.getCurrentUser();
-      const userData = response.data;
+      const userData = response.data.data;
 
       // Cập nhật user info
       localStorage.setItem("user", JSON.stringify(userData));
@@ -208,8 +204,8 @@ export const useAuth = () => {
         store.commit("auth/SET_AUTHENTICATED", true);
       } catch (error) {
         console.error("Failed to parse saved user data:", error);
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        // localStorage.removeItem("token");
+        // localStorage.removeItem("user");
       }
     }
   };
