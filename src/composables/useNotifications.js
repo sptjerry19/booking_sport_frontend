@@ -1,6 +1,7 @@
 import { ref, reactive, computed } from "vue";
 import { getToken, onMessage } from "firebase/messaging";
 import { messaging } from "../plugins/firebase";
+import { useApi } from "./useApi";
 
 const notifications = ref([]);
 const notificationPermission = ref(Notification.permission);
@@ -11,6 +12,8 @@ export function useNotifications() {
   const isSupported = () => {
     return "serviceWorker" in navigator && "Notification" in window;
   };
+
+  const api = useApi();
 
   // Yêu cầu quyền thông báo
   const requestPermission = async () => {
@@ -104,20 +107,17 @@ export function useNotifications() {
   // Gửi token lên server
   const sendTokenToServer = async (token) => {
     try {
-      // Thay thế bằng API endpoint của bạn
-      const response = await fetch("/api/save-fcm-token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          token,
-          userId: getCurrentUserId(), // Implement hàm này để lấy user ID
-        }),
-      });
+      const userId = getCurrentUserId();
+      const response = await api.registerNotificationToken({ token, userId });
 
-      if (response.ok) {
+      if (response && (response.status === 200 || response.status === 201)) {
         console.log("Token đã được gửi lên server thành công");
+      } else {
+        console.warn(
+          "Gửi token nhưng server trả về:",
+          response?.status,
+          response?.data
+        );
       }
     } catch (error) {
       console.error("Lỗi khi gửi token lên server:", error);
@@ -202,7 +202,12 @@ export function useNotifications() {
   // Helper function - bạn cần implement dựa trên hệ thống auth của mình
   const getCurrentUserId = () => {
     // Lấy từ store hoặc localStorage
-    return localStorage.getItem("userId") || "anonymous";
+    const user = localStorage.getItem("user") || null;
+    if (user) {
+      const userObj = JSON.parse(user);
+      return userObj.id;
+    }
+    return "anonymous";
   };
 
   // Khởi tạo notifications

@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <!-- Header -->
-    <div class="bg-white shadow-sm">
+    <div class="bg-white shadow-sm mt-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <h1 class="text-2xl font-bold text-gray-900">Tìm sân thể thao</h1>
         <p class="text-gray-600 mt-1">{{ totalVenues }} sân được tìm thấy</p>
@@ -73,6 +73,7 @@
                 <input
                   v-model.number="filters.price_min"
                   type="number"
+                  :min="0"
                   placeholder="Từ"
                   class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   @input="debouncedSearch"
@@ -80,6 +81,7 @@
                 <input
                   v-model.number="filters.price_max"
                   type="number"
+                  :min="0"
                   placeholder="Đến"
                   class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   @input="debouncedSearch"
@@ -383,13 +385,33 @@ export default {
         });
 
         const response = await api.getVenues(params);
-        venues.value = response.data.data || [];
-        pagination.value = {
-          current_page: response.data.current_page,
-          last_page: response.data.last_page,
-          per_page: response.data.per_page,
-          total: response.data.total,
+        const resData = response.data || {};
+
+        // venues list may be in resData.data or resData.venues
+        const venuesList = resData.data || resData.venues || [];
+
+        // pagination metadata may be under meta, pagination, or top-level fields
+        const meta = resData.meta || resData.pagination || {
+          current_page: resData.current_page,
+          last_page: resData.last_page,
+          per_page: resData.per_page,
+          total: resData.total,
         };
+
+        console.log("API response data:", meta?.pagination);
+
+        // normalize pagination values and provide safe defaults
+        const newPagination = {
+          current_page: Number(meta?.pagination?.current_page) || 1,
+          last_page: Number(meta?.pagination?.last_page) || 1,
+          per_page: Number(meta?.pagination?.per_page) || pagination.value.per_page || 12,
+          total: Number(meta?.pagination?.total) || 0,
+        };
+
+        venues.value = response.data.data || [];
+        pagination.value = newPagination;
+        console.log("Loaded venues:", venues.value);
+        console.log("Pagination info:", pagination.value);
 
         // Update store
         store.commit("venue/SET_VENUES", venues.value);
