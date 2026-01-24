@@ -1,12 +1,15 @@
 import { ref, reactive, computed } from "vue";
 import { getToken, onMessage } from "firebase/messaging";
 import { messaging } from "../plugins/firebase";
+import { useApi } from "./useApi";
 
 const notifications = ref([]);
 const notificationPermission = ref(Notification.permission);
 const registrationToken = ref(null);
 
 export function useNotifications() {
+  const api = useApi();
+
   // Kiểm tra hỗ trợ service worker và notifications
   const isSupported = () => {
     return "serviceWorker" in navigator && "Notification" in window;
@@ -49,7 +52,7 @@ export function useNotifications() {
     try {
       console.log("⚙️ Đang đăng ký Service Worker...");
       const registration = await navigator.serviceWorker.register(
-        "/firebase-messaging-sw.js"
+        "/firebase-messaging-sw.js",
       );
       console.log("✅ Service Worker đã được đăng ký:", registration);
       console.log("📍 SW Scope:", registration.scope);
@@ -70,7 +73,7 @@ export function useNotifications() {
         "🔧 VAPID Key:",
         import.meta.env.VITE_FIREBASE_VAPID_KEY
           ? "✅ Có từ env"
-          : "❌ Dùng fallback key"
+          : "❌ Dùng fallback key",
       );
       console.log("🔧 Messaging object:", messaging);
 
@@ -104,21 +107,12 @@ export function useNotifications() {
   // Gửi token lên server
   const sendTokenToServer = async (token) => {
     try {
-      // Thay thế bằng API endpoint của bạn
-      const response = await fetch("/api/save-fcm-token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          token,
-          userId: getCurrentUserId(), // Implement hàm này để lấy user ID
-        }),
+      const response = await api.saveFCMToken({
+        token,
+        userId: getCurrentUserId(),
       });
 
-      if (response.ok) {
-        console.log("Token đã được gửi lên server thành công");
-      }
+      console.log("Token đã được gửi lên server thành công");
     } catch (error) {
       console.error("Lỗi khi gửi token lên server:", error);
     }
@@ -174,7 +168,7 @@ export function useNotifications() {
   // Đánh dấu thông báo đã đọc
   const markAsRead = (notificationId) => {
     const notification = notifications.value.find(
-      (n) => n.id === notificationId
+      (n) => n.id === notificationId,
     );
     if (notification) {
       notification.read = true;

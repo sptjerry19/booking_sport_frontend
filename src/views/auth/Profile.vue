@@ -26,8 +26,8 @@
                       class="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center text-xl font-semibold text-gray-600 overflow-hidden"
                     >
                       <img
-                        v-if="user?.avatar"
-                        :src="user.avatar"
+                        v-if="previewAvatar || form.avatar"
+                        :src="previewAvatar || form.avatar"
                         :alt="user.name"
                         class="w-full h-full object-cover"
                       />
@@ -40,7 +40,7 @@
                     <input
                       type="file"
                       accept="image/*"
-                      @change="handleAvatarUpload"
+                      @change="handleFileSelect"
                       class="hidden"
                       id="avatar-upload"
                     />
@@ -300,6 +300,14 @@
         </div>
       </div>
     </div>
+
+    <!-- Avatar Crop Modal -->
+    <AvatarCropModal
+      :isOpen="showCropModal"
+      :imageFile="selectedFile"
+      @close="closeCropModal"
+      @upload="handleAvatarUpload"
+    />
   </div>
 </template>
 
@@ -309,9 +317,13 @@ import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { useAuth } from "@/composables/useAuth";
 import { useApi } from "@/composables/useApi";
+import AvatarCropModal from "@/components/modals/AvatarCropModal.vue";
 
 export default {
   name: "Profile",
+  components: {
+    AvatarCropModal,
+  },
   setup() {
     const router = useRouter();
     const store = useStore();
@@ -328,11 +340,17 @@ export default {
       completed_bookings: 0,
     });
 
+    // Avatar crop modal
+    const showCropModal = ref(false);
+    const selectedFile = ref(null);
+    const previewAvatar = ref("");
+
     const form = ref({
       name: "",
       email: "",
       phone: "",
       address: "",
+      avatar: "",
     });
 
     const passwordForm = ref({
@@ -355,6 +373,7 @@ export default {
           email: profileData.user.email || "",
           phone: profileData.user.phone || "",
           address: profileData.user.address || "",
+          avatar: profileData.user.avatar || "",
         };
 
         // Update stats
@@ -370,12 +389,14 @@ export default {
             email: user.value.email || "",
             phone: user.value.phone || "",
             address: user.value.address || "",
+            avatar: user.value.avatar || "",
           };
         }
       }
     };
 
-    const handleAvatarUpload = async (event) => {
+    // Handle file selection
+    const handleFileSelect = (event) => {
       const target = event.target;
       const file = target.files?.[0];
 
@@ -393,22 +414,42 @@ export default {
         return;
       }
 
+      // Set selected file and show crop modal
+      selectedFile.value = file;
+      showCropModal.value = true;
+
+      // Reset file input
+      target.value = "";
+    };
+
+    // Handle avatar upload after cropping
+    const handleAvatarUpload = async (croppedFile) => {
       try {
         loading.value = true;
-        const response = await api.uploadAvatar(file);
+        const response = await api.uploadAvatar(croppedFile);
 
         // Update user avatar in store
         const updatedUser = { ...user.value, avatar: response.data.avatar };
         store.commit("auth/SET_USER", updatedUser);
         localStorage.setItem("user", JSON.stringify(updatedUser));
 
+        // Set preview avatar
+        previewAvatar.value = response.data.avatar;
+
         alert("Ảnh đại diện đã được cập nhật thành công!");
+        closeCropModal();
       } catch (error) {
         console.error("Avatar upload error:", error);
         alert("Có lỗi xảy ra khi upload ảnh đại diện!");
       } finally {
         loading.value = false;
       }
+    };
+
+    // Close crop modal
+    const closeCropModal = () => {
+      showCropModal.value = false;
+      selectedFile.value = null;
     };
 
     const updateProfile = async () => {
@@ -502,9 +543,14 @@ export default {
       errors,
       passwordErrors,
       stats,
+      showCropModal,
+      selectedFile,
+      previewAvatar,
       updateProfile,
       changePassword,
+      handleFileSelect,
       handleAvatarUpload,
+      closeCropModal,
       logout,
       formatDate,
     };

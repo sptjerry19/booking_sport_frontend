@@ -27,10 +27,10 @@ export const useBooking = () => {
   );
 
   // Actions
-  const getMyBookings = async () => {
+  const getMyBookings = async (params?: any) => {
     try {
       store.commit("booking/SET_LOADING", true);
-      const response = await api.getMyBookings();
+      const response = await api.getMyBookings(params);
 
       store.commit("booking/SET_MY_BOOKINGS", response.data);
       return { success: true, data: response.data };

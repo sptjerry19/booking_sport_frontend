@@ -45,7 +45,7 @@ api.interceptors.response.use(
       window.location.href = "/auth/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export const useApi = () => {
@@ -164,7 +164,7 @@ export const useApi = () => {
     // Bookings endpoints
     createBooking: (data: CreateBookingData) => api.post("/bookings", data),
 
-    getMyBookings: () => api.get("/me/bookings"),
+    getMyBookings: (params?: any) => api.get("/bookings", { params }),
 
     getBooking: (id: string | number) => api.get(`/bookings/${id}`),
 
@@ -183,6 +183,8 @@ export const useApi = () => {
       api.post(`/bookings/${bookingId}/payment`, paymentData),
 
     // Notifications endpoints
+    saveFCMToken: (data: any) => api.post("/save-fcm-token", data),
+
     registerNotificationToken: (data: any) =>
       api.post("/notifications/register-token", data),
 
@@ -211,6 +213,25 @@ export const useApi = () => {
     getNotificationStats: () => api.get("/notifications/stats"),
 
     getNotification: (id: string | number) => api.get(`/notifications/${id}`),
+
+    // Chat endpoints
+    getChatMessages: (chatRoomId: string | number, params?: any) =>
+      api.get(`/chat-rooms/${chatRoomId}/messages`, { params }),
+
+    sendChatMessage: (chatRoomId: string | number, data: any) =>
+      api.post(`/chat-rooms/${chatRoomId}/messages`, data),
+
+    confirmBookingViaChat: (chatRoomId: string | number) =>
+      api.post(`/chat-rooms/${chatRoomId}/confirm-booking`),
+
+    // Public Chat endpoints
+    checkPublicChat: (uuid: string) => api.get(`/public/chat/check/${uuid}`),
+
+    getPublicChatMessages: (uuid: string, params?: any) =>
+      api.get(`/public/chat/${uuid}/messages`, { params }),
+
+    sendPublicChatMessage: (uuid: string, data: any) =>
+      api.post(`/public/chat/${uuid}/messages`, data),
 
     // Search endpoints
     searchVenues: (query: string, filters?: any) =>

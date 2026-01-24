@@ -185,6 +185,18 @@
                 </div>
               </div>
             </div>
+
+            <!-- Chat Room -->
+            <ChatWindow
+              v-if="booking.chat_room && user"
+              :booking-id="booking.id"
+              :chat-room-id="booking.chat_room.id"
+              :chat-room-uuid="booking.chat_room.uuid"
+              :current-user="user"
+              :is-owner="isOwner"
+              :booking-status="booking.status"
+              @status-changed="loadBooking"
+            />
           </div>
 
           <!-- Sidebar -->
@@ -321,13 +333,19 @@
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useBooking } from "@/composables/useBooking";
+import { useAuth } from "@/composables/useAuth";
+import ChatWindow from "@/components/chat/ChatWindow.vue";
 
 export default {
   name: "BookingDetail",
+  components: {
+    ChatWindow,
+  },
   setup() {
     const route = useRoute();
     const router = useRouter();
     const bookingComposable = useBooking();
+    const { user, isOwner } = useAuth();
 
     const booking = ref(null);
     const loading = ref(false);
@@ -338,9 +356,10 @@ export default {
         loading.value = true;
         const bookingId = route.params.id;
         const result = await bookingComposable.getBookingDetails(bookingId);
+        console.log(result.data.data);
 
         if (result.success) {
-          booking.value = result.data;
+          booking.value = result.data.data;
         } else {
           console.error("Booking not found:", result.error);
         }
@@ -475,6 +494,8 @@ export default {
     });
 
     return {
+      user,
+      isOwner,
       booking,
       loading,
       cancelBooking,

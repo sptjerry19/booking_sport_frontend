@@ -204,7 +204,7 @@ export const useApi = () => {
         // Bookings
         createBooking: (data: CreateBookingData) =>
             api("/bookings", { method: "POST", body: data }),
-        getMyBookings: () => api("/me/bookings"),
+        getMyBookings: () => api("/bookings"),
 
         // Courts
         getCourtAvailability: (courtId: string, date: string) =>

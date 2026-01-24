@@ -1,10 +1,10 @@
 <template>
   <div
-    class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8"
+    class="register-container h-screen w-full bg-gradient-to-br flex flex-col justify-center py-12 sm:px-6 lg:px-8 overflow-hidden"
   >
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
       <div class="text-center">
-        <h2 class="text-3xl font-bold text-gray-900">Đăng ký tài khoản</h2>
+        <h2 class="text-3xl font-bold text-gray-700">Đăng ký tài khoản</h2>
         <p class="mt-2 text-gray-600">
           Hoặc
           <RouterLink to="/auth/login" class="text-blue-600 hover:text-blue-500"
@@ -242,7 +242,7 @@
                 />
                 <label
                   :for="`sport-${sport.id}`"
-                  class="ml-2 block text-sm text-gray-900"
+                  class="ml-2 block text-sm text-gray-700"
                 >
                   {{ sport.name }}
                 </label>
@@ -263,7 +263,7 @@
               required
               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
-            <label for="terms" class="ml-2 block text-sm text-gray-900">
+            <label for="terms" class="ml-2 block text-sm text-gray-700">
               Tôi đồng ý với
               <a href="#" class="text-blue-600 hover:text-blue-500"
                 >điều khoản sử dụng</a
@@ -429,3 +429,44 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* Đảm bảo container fullscreen hoàn toàn */
+.register-container {
+  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Override global styles nếu cần */
+:deep(body) {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden;
+}
+
+/* Smooth transition cho form */
+.bg-white {
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Cải thiện shadow */
+.shadow {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Text colors for better readability */
+.text-gray-900 {
+  color: #374151 !important;
+}
+
+.text-gray-600 {
+  color: #6b7280 !important;
+}
+</style>

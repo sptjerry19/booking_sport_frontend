@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 py-8">
+  <div class="h-screen bg-gray-50 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header -->
       <div class="mb-8">
@@ -33,20 +33,27 @@
               >Từ ngày:</label
             >
             <input
-              v-model="filters.date_from"
+              v-model="filters.booking_date_from"
               type="date"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              @change="loadBookings"
+              @change="handleDateFromChange"
             />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2"
-              >Đến ngày:</label
+              >Đến ngày:
+              <span
+                v-if="!filters.booking_date_from"
+                class="text-xs text-gray-500"
+                >(Chọn "Từ ngày" trước)</span
+              ></label
             >
             <input
-              v-model="filters.date_to"
+              v-model="filters.booking_date_to"
               type="date"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              :min="filters.booking_date_from"
+              :disabled="!filters.booking_date_from"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
               @change="loadBookings"
             />
           </div>
@@ -162,7 +169,7 @@
                   <div>
                     <p class="text-xs text-gray-500">Tổng tiền:</p>
                     <p class="text-sm font-medium text-green-600">
-                      {{ formatCurrency(booking.total_price) }}
+                      {{ formatCurrency(booking.final_amount) }}
                     </p>
                   </div>
                 </div>
@@ -173,7 +180,7 @@
                 <div class="flex items-center space-x-2 mb-4">
                   <span
                     :class="getStatusClass(booking.status)"
-                    class="px-3 py-1 rounded-full text-xs font-medium"
+                    class="px-3 py-1 rounded-full text-xs font-medium text-gray-700"
                   >
                     {{ getStatusText(booking.status) }}
                   </span>
@@ -252,8 +259,8 @@ export default {
     const loading = ref(false);
     const filters = ref({
       status: "",
-      date_from: "",
-      date_to: "",
+      booking_date_from: "",
+      booking_date_to: "",
     });
 
     const pagination = ref({
@@ -282,17 +289,37 @@ export default {
     const loadBookings = async (page = 1) => {
       try {
         loading.value = true;
-        const result = await booking.getMyBookings();
+
+        // Clean up empty filters
+        const cleanFilters = Object.fromEntries(
+          Object.entries(filters.value).filter(
+            ([_, value]) =>
+              value !== "" && value !== null && value !== undefined
+          )
+        );
+
+        console.log("filters", filters.value);
+        console.log("cleanFilters", cleanFilters);
+
+        const result = await booking.getMyBookings({
+          page: page,
+          per_page: 10,
+          ...cleanFilters,
+        });
+        console.log("data bookings", result.data);
+        console.log("pagination", result.data.meta);
 
         if (result.success) {
-          bookings.value = result.data || [];
-          // Mock pagination data
-          pagination.value = {
-            current_page: page,
-            last_page: Math.ceil(bookings.value.length / 10),
-            per_page: 10,
-            total: bookings.value.length,
-          };
+          bookings.value = result.data.data || [];
+          pagination.value = result.data.meta;
+          console.log("pagination 1", pagination.value);
+          // // Mock pagination data
+          // pagination.value = {
+          //   current_page: page,
+          //   last_page: Math.ceil(bookings.value.length / 10),
+          //   per_page: 10,
+          //   total: bookings.value.length,
+          // };
         }
       } catch (error) {
         console.error("Failed to load bookings:", error);
@@ -329,9 +356,28 @@ export default {
     const resetFilters = () => {
       filters.value = {
         status: "",
-        date_from: "",
-        date_to: "",
+        booking_date_from: "",
+        booking_date_to: "",
       };
+      loadBookings();
+    };
+
+    const handleDateFromChange = () => {
+      // Nếu date_from lớn hơn date_to, tự động set date_to = date_from
+      if (
+        filters.value.booking_date_from &&
+        filters.value.booking_date_to &&
+        filters.value.booking_date_from > filters.value.booking_date_to
+      ) {
+        filters.value.booking_date_to = filters.value.booking_date_from;
+      }
+
+      // Nếu date_from được xóa (empty), cũng xóa date_to để tránh confusion
+      if (!filters.value.booking_date_from && filters.value.booking_date_to) {
+        filters.value.booking_date_to = "";
+      }
+
+      // Load bookings với filter mới
       loadBookings();
     };
 
@@ -422,6 +468,7 @@ export default {
       loadBookings,
       cancelBooking,
       resetFilters,
+      handleDateFromChange,
       canCancel,
       formatDate,
       formatTime,

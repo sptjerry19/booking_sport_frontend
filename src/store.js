@@ -20,6 +20,7 @@ const auth = {
     },
     getUserName: (state) => state.user?.name || "",
     getUserEmail: (state) => state.user?.email || "",
+    isAuthenticated: (state) => state.isAuthenticated,
   },
   mutations: {
     SET_USER(state, user) {

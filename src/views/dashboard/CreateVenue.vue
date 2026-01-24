@@ -508,6 +508,12 @@ export default {
         }
 
         // Validate courts
+        console.log(form.value.courts);
+        console.log(form.value.courts.length);
+        console.log(form.value.courts[0]);
+        console.log(form.value.courts[0].name);
+        console.log(form.value.courts[0].sport_id);
+        console.log(form.value.courts[0].price_per_hour);
         for (let i = 0; i < form.value.courts.length; i++) {
           const court = form.value.courts[i];
           if (
@@ -515,6 +521,7 @@ export default {
             !court.sport_type ||
             !court.price_per_hour
           ) {
+            console.log(court);
             formError.value = `Vui lòng điền đầy đủ thông tin cho sân ${i + 1}`;
             return;
           }
