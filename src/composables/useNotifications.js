@@ -15,6 +15,8 @@ export function useNotifications() {
     return "serviceWorker" in navigator && "Notification" in window;
   };
 
+  const api = useApi();
+
   // Yêu cầu quyền thông báo
   const requestPermission = async () => {
     console.log("🔔 Bắt đầu request permission...");
@@ -107,12 +109,18 @@ export function useNotifications() {
   // Gửi token lên server
   const sendTokenToServer = async (token) => {
     try {
-      const response = await api.saveFCMToken({
-        token,
-        userId: getCurrentUserId(),
-      });
+      const userId = getCurrentUserId();
+      const response = await api.registerNotificationToken({ token, userId });
 
-      console.log("Token đã được gửi lên server thành công");
+      if (response && (response.status === 200 || response.status === 201)) {
+        console.log("Token đã được gửi lên server thành công");
+      } else {
+        console.warn(
+          "Gửi token nhưng server trả về:",
+          response?.status,
+          response?.data
+        );
+      }
     } catch (error) {
       console.error("Lỗi khi gửi token lên server:", error);
     }
@@ -196,7 +204,12 @@ export function useNotifications() {
   // Helper function - bạn cần implement dựa trên hệ thống auth của mình
   const getCurrentUserId = () => {
     // Lấy từ store hoặc localStorage
-    return localStorage.getItem("userId") || "anonymous";
+    const user = localStorage.getItem("user") || null;
+    if (user) {
+      const userObj = JSON.parse(user);
+      return userObj.id;
+    }
+    return "anonymous";
   };
 
   // Khởi tạo notifications

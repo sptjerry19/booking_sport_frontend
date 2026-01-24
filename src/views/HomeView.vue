@@ -13,7 +13,7 @@
           </p>
 
           <!-- Search Bar -->
-          <div class="max-w-4xl mx-auto mb-8">
+          <form class="max-w-4xl mx-auto mb-8" @submit.prevent="searchVenues">
             <div class="bg-white rounded-lg p-6 shadow-lg">
               <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
@@ -66,7 +66,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </section>
