@@ -17,6 +17,7 @@ onMounted(() => {
   <div id="app">
     <Navbar />
     <main>
+      <div class="mt-16"></div>
       <RouterView />
     </main>
     <!-- Notification Permission Modal -->

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import VenueList from "../views/venues/VenueList.vue";
 import VenueDetail from "../views/venues/VenueDetail.vue";
+import VenueBooking from "../views/venues/VenueBooking.vue";
 import Login from "../views/auth/Login.vue";
 import authMiddleware from "../middleware/auth";
 import ownerMiddleware from "../middleware/owner";
@@ -25,6 +26,12 @@ const router = createRouter({
       name: "VenueDetail",
       component: VenueDetail,
     },
+    {
+      path: "/venues/:id/booking",
+      name: "VenueBooking",
+      component: VenueBooking,
+      beforeEnter: authMiddleware,
+    },
 
     // Auth routes
     {
@@ -37,6 +44,12 @@ const router = createRouter({
       path: "/auth/register",
       name: "Register",
       component: () => import("../views/auth/Register.vue"),
+      meta: { guest: true },
+    },
+    {
+      path: "/chat/join/:token",
+      name: "PublicChatRoom",
+      component: () => import("../views/chat/PublicChatRoom.vue"),
       meta: { guest: true },
     },
 

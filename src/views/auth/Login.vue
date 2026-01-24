@@ -1,6 +1,6 @@
 <template>
   <div
-    class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8"
+    class="login-container h-screen w-full bg-gradient-to-br flex flex-col justify-center py-12 sm:px-6 lg:px-8 overflow-hidden"
   >
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
       <div class="text-center">
@@ -21,7 +21,7 @@
         <form @submit.prevent="handleLogin" class="space-y-6">
           <!-- Email -->
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">
+            <label for="email" class="block text-sm font-medium text-gray-200">
               Email
             </label>
             <div class="mt-1">
@@ -43,7 +43,7 @@
           <div>
             <label
               for="password"
-              class="block text-sm font-medium text-gray-700"
+              class="block text-sm font-medium text-gray-200"
             >
               Mật khẩu
             </label>
@@ -98,7 +98,7 @@
                 type="checkbox"
                 class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <label for="remember_me" class="ml-2 block text-sm text-gray-900">
+              <label for="remember_me" class="ml-2 block text-sm text-gray-200">
                 Ghi nhớ đăng nhập
               </label>
             </div>
@@ -299,3 +299,35 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* Đảm bảo container fullscreen hoàn toàn */
+.login-container {
+  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Override global styles nếu cần */
+:deep(body) {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden;
+}
+
+/* Smooth transition cho form */
+.bg-white {
+  backdrop-filter: blur(10px);
+  background-color: rgba(21, 38, 44, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Cải thiện shadow */
+.shadow {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+</style>

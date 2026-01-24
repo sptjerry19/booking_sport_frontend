@@ -216,7 +216,7 @@ npm run test:e2e
 
 ### Bookings
 
-- \`GET /api/v1/me/bookings\` - Booking của user
+- \`GET /api/v1/bookings\` - Booking của user
 - \`POST /api/v1/bookings\` - Tạo booking mới
 - \`GET /api/v1/courts/{id}/availability\` - Lịch trống
 
