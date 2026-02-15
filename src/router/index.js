@@ -5,6 +5,7 @@ import VenueDetail from "../views/venues/VenueDetail.vue";
 import Login from "../views/auth/Login.vue";
 import authMiddleware from "../middleware/auth";
 import ownerMiddleware from "../middleware/owner";
+import adminMiddleware from "../middleware/admin";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -74,6 +75,12 @@ const router = createRouter({
       beforeEnter: ownerMiddleware,
     },
     {
+      path: "/dashboard/users",
+      name: "ManageUsers",
+      component: () => import("../views/dashboard/ManageUsers.vue"),
+      beforeEnter: adminMiddleware,
+    },
+    {
       path: "/dashboard/venues",
       name: "ManageVenues",
       component: () => import("../views/dashboard/ManageVenues.vue"),
@@ -92,9 +99,39 @@ const router = createRouter({
       beforeEnter: ownerMiddleware,
     },
     {
+      path: "/dashboard/venues/schedules",
+      name: "VenueScheduleManager",
+      component: () => import("../views/dashboard/VenueScheduleManager.vue"),
+      beforeEnter: ownerMiddleware,
+    },
+    {
       path: "/dashboard/bookings",
       name: "ManageBookings",
       component: () => import("../views/dashboard/ManageBookings.vue"),
+      beforeEnter: ownerMiddleware,
+    },
+    {
+      path: "/dashboard/notices",
+      name: "ManageNotices",
+      component: () => import("../views/dashboard/ManageNotices.vue"),
+      beforeEnter: ownerMiddleware,
+    },
+    {
+      path: "/dashboard/sports",
+      name: "ManageSports",
+      component: () => import("../views/dashboard/ManageSports.vue"),
+      beforeEnter: adminMiddleware,
+    },
+    {
+      path: "/dashboard/amenities",
+      name: "ManageAmenities",
+      component: () => import("../views/dashboard/ManageAmenities.vue"),
+      beforeEnter: adminMiddleware,
+    },
+    {
+      path: "/dashboard/reports",
+      name: "ReportsDashboard",
+      component: () => import("../views/dashboard/ReportsDashboard.vue"),
       beforeEnter: ownerMiddleware,
     },
 

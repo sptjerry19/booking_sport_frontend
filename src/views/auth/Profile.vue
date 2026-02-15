@@ -27,7 +27,7 @@
                     >
                       <img
                         v-if="user?.avatar"
-                        :src="user.avatar"
+                        :src="user?.avatar"
                         :alt="user.name"
                         class="w-full h-full object-cover"
                       />
@@ -152,7 +152,7 @@
             </div>
           </div>
 
-          <!-- Change Password -->
+          <!-- Change new_password -->
           <div class="bg-white rounded-lg shadow mt-8">
             <div class="p-6">
               <h2 class="text-lg font-semibold text-gray-900 mb-6">
@@ -160,7 +160,7 @@
               </h2>
 
               <form @submit.prevent="changePassword" class="space-y-6">
-                <!-- Current Password -->
+                <!-- Current new_password -->
                 <div>
                   <label
                     for="current_password"
@@ -171,7 +171,7 @@
                   <input
                     id="current_password"
                     v-model="passwordForm.current_password"
-                    type="password"
+                    type="new_password"
                     required
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     :class="{
@@ -186,42 +186,42 @@
                   </p>
                 </div>
 
-                <!-- New Password -->
+                <!-- New new_password -->
                 <div>
                   <label
-                    for="password"
+                    for="new_password"
                     class="block text-sm font-medium text-gray-700 mb-2"
                   >
                     Mật khẩu mới
                   </label>
                   <input
-                    id="password"
-                    v-model="passwordForm.password"
-                    type="password"
+                    id="new_password"
+                    v-model="passwordForm.new_password"
+                    type="new_password"
                     required
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    :class="{ 'border-red-300': passwordErrors.password }"
+                    :class="{ 'border-red-300': passwordErrors.new_password }"
                   />
                   <p
-                    v-if="passwordErrors.password"
+                    v-if="passwordErrors.new_password"
                     class="text-red-600 text-sm mt-1"
                   >
-                    {{ passwordErrors.password[0] }}
+                    {{ passwordErrors.new_password[0] }}
                   </p>
                 </div>
 
-                <!-- Confirm Password -->
+                <!-- Confirm new_password -->
                 <div>
                   <label
-                    for="password_confirmation"
+                    for="new_password_confirmation"
                     class="block text-sm font-medium text-gray-700 mb-2"
                   >
                     Xác nhận mật khẩu mới
                   </label>
                   <input
-                    id="password_confirmation"
-                    v-model="passwordForm.password_confirmation"
-                    type="password"
+                    id="new_password_confirmation"
+                    v-model="passwordForm.new_password_confirmation"
+                    type="new_password"
                     required
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
@@ -337,8 +337,8 @@ export default {
 
     const passwordForm = ref({
       current_password: "",
-      password: "",
-      password_confirmation: "",
+      new_password: "",
+      new_password_confirmation: "",
     });
 
     // Computed
@@ -442,11 +442,11 @@ export default {
         passwordErrors.value = {};
 
         if (
-          passwordForm.value.password !==
-          passwordForm.value.password_confirmation
+          passwordForm.value.new_password !==
+          passwordForm.value.new_password_confirmation
         ) {
           passwordErrors.value = {
-            password_confirmation: ["Mật khẩu xác nhận không khớp"],
+            new_password_confirmation: ["Mật khẩu xác nhận không khớp"],
           };
           return;
         }
@@ -456,8 +456,8 @@ export default {
         if (result.success) {
           passwordForm.value = {
             current_password: "",
-            password: "",
-            password_confirmation: "",
+            new_password: "",
+            new_password_confirmation: "",
           };
           alert("Mật khẩu đã được thay đổi thành công!");
         } else {

@@ -201,7 +201,7 @@
             <h3 class="text-lg font-semibold text-gray-900 mb-4">
               Hành động nhanh
             </h3>
-            <div class="space-y-3">
+            <div class="grid grid-cols-1 gap-3">
               <RouterLink
                 to="/dashboard/venues/create"
                 class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors block text-center"
@@ -215,10 +215,49 @@
                 Quản lý sân
               </RouterLink>
               <RouterLink
+                to="/dashboard/venues/schedules"
+                class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-md font-medium transition-colors block text-center"
+              >
+                Khung giờ & chỉnh sửa sân
+              </RouterLink>
+              <RouterLink
                 to="/dashboard/bookings"
                 class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-md font-medium transition-colors block text-center"
               >
                 Quản lý đặt sân
+              </RouterLink>
+              <RouterLink
+                to="/dashboard/notices"
+                class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-md font-medium transition-colors block text-center"
+              >
+                Quản lý thông báo
+              </RouterLink>
+              <RouterLink
+                to="/dashboard/reports"
+                class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-md font-medium transition-colors block text-center"
+              >
+                Báo cáo doanh thu
+              </RouterLink>
+              <RouterLink
+                v-if="isAdmin"
+                to="/dashboard/users"
+                class="w-full border border-yellow-300 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 px-4 py-2 rounded-md font-medium transition-colors block text-center"
+              >
+                Quản lý user
+              </RouterLink>
+              <RouterLink
+                v-if="isAdmin"
+                to="/dashboard/sports"
+                class="w-full border border-yellow-300 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 px-4 py-2 rounded-md font-medium transition-colors block text-center"
+              >
+                Quản lý môn thể thao
+              </RouterLink>
+              <RouterLink
+                v-if="isAdmin"
+                to="/dashboard/amenities"
+                class="w-full border border-yellow-300 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 px-4 py-2 rounded-md font-medium transition-colors block text-center"
+              >
+                Quản lý tiện ích
               </RouterLink>
             </div>
           </div>
@@ -317,11 +356,13 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import { useApi } from "@/composables/useApi";
+import { useAuth } from "@/composables/useAuth";
 
 export default {
   name: "OwnerDashboard",
   setup() {
     const api = useApi();
+    const { isAdmin } = useAuth();
 
     const loading = ref(false);
     const stats = ref({
@@ -447,6 +488,7 @@ export default {
       formatTime,
       getStatusText,
       getStatusClass,
+      isAdmin,
     };
   },
 };

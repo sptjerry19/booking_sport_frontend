@@ -14,6 +14,9 @@ export const useAuth = () => {
     () => store.state.auth.isAuthenticated
   );
   const loading = computed<boolean>(() => store.state.auth.loading);
+  const isAdmin = computed<boolean>(() => {
+    return user.value?.roles?.includes("admin") || false;
+  });
   const isOwner = computed<boolean>(() => {
     return (
       user.value?.roles?.includes("owner") ||
@@ -216,6 +219,7 @@ export const useAuth = () => {
     token,
     isAuthenticated,
     loading,
+    isAdmin,
     isOwner,
 
     // Actions
