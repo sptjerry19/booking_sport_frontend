@@ -11,7 +11,7 @@ export const useAuth = () => {
   const user = computed<User | null>(() => store.state.auth.user);
   const token = computed<string | null>(() => store.state.auth.token);
   const isAuthenticated = computed<boolean>(
-    () => store.state.auth.isAuthenticated
+    () => store.state.auth.isAuthenticated,
   );
   const loading = computed<boolean>(() => store.state.auth.loading);
   const isOwner = computed<boolean>(() => {
@@ -73,6 +73,7 @@ export const useAuth = () => {
       return {
         success: false,
         error: error.response?.data?.message || "Đăng ký thất bại",
+        errors: error.response?.data?.errors,
       };
     } finally {
       store.commit("auth/SET_LOADING", false);

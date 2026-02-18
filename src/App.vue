@@ -3,6 +3,7 @@ import { RouterView } from "vue-router";
 import { onMounted } from "vue";
 import Navbar from "./components/Layout/Navbar.vue";
 import NotificationPermission from "./components/UI/NotificationPermission.vue";
+import ToastContainer from "./components/UI/ToastContainer.vue";
 import { useDarkMode } from "./composables/useDarkMode";
 
 // Khởi tạo dark mode
@@ -22,6 +23,8 @@ onMounted(() => {
     </main>
     <!-- Notification Permission Modal -->
     <NotificationPermission />
+    <!-- Toast Container -->
+    <ToastContainer />
   </div>
 </template>
 

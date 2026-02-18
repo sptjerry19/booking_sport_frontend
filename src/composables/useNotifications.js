@@ -15,8 +15,6 @@ export function useNotifications() {
     return "serviceWorker" in navigator && "Notification" in window;
   };
 
-  const api = useApi();
-
   // Yêu cầu quyền thông báo
   const requestPermission = async () => {
     console.log("🔔 Bắt đầu request permission...");

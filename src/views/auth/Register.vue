@@ -1,6 +1,6 @@
 <template>
   <div
-    class="register-container h-screen w-full bg-gradient-to-br flex flex-col justify-center py-12 sm:px-6 lg:px-8 overflow-hidden"
+    class="register-container min-h-screen w-full bg-gradient-to-br flex flex-col justify-center py-12 sm:px-6 lg:px-8"
   >
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
       <div class="text-center">
@@ -227,25 +227,61 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">
               Môn thể thao yêu thích
             </label>
-            <div class="space-y-2">
-              <div
-                v-for="sport in availableSports"
-                :key="sport.id"
-                class="flex items-center"
+            <div class="relative">
+              <button
+                type="button"
+                @click="isSportsDropdownOpen = !isSportsDropdownOpen"
+                class="relative w-full bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               >
-                <input
-                  :id="`sport-${sport.id}`"
-                  v-model="form.preferred_sports"
-                  :value="sport.id"
-                  type="checkbox"
-                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label
-                  :for="`sport-${sport.id}`"
-                  class="ml-2 block text-sm text-gray-700"
+                <span class="block truncate">
+                  {{
+                    form.preferred_sports.length > 0
+                      ? `Đã chọn ${form.preferred_sports.length} môn thể thao`
+                      : "Chọn môn thể thao"
+                  }}
+                </span>
+                <span
+                  class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
                 >
-                  {{ sport.name }}
-                </label>
+                  <svg
+                    class="h-5 w-5 text-gray-400"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </button>
+
+              <div
+                v-if="isSportsDropdownOpen"
+                class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+              >
+                <div
+                  v-for="sport in availableSports"
+                  :key="sport.id"
+                  class="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  @click="toggleSport(sport.id)"
+                >
+                  <input
+                    :id="`sport-${sport.id}`"
+                    :checked="form.preferred_sports.includes(sport.id)"
+                    type="checkbox"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded pointer-events-none"
+                  />
+                  <label
+                    :for="`sport-${sport.id}`"
+                    class="ml-3 block text-sm text-gray-700 w-full cursor-pointer pointer-events-none"
+                  >
+                    {{ sport.name }}
+                  </label>
+                </div>
               </div>
             </div>
             <p v-if="errors.preferred_sports" class="text-red-600 text-sm mt-1">
@@ -329,6 +365,7 @@ import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuth } from "@/composables/useAuth";
 import { useApi } from "@/composables/useApi";
+import { useToast } from "@/composables/useToast";
 
 export default {
   name: "Register",
@@ -336,6 +373,7 @@ export default {
     const router = useRouter();
     const auth = useAuth();
     const api = useApi();
+    const { addToast } = useToast();
 
     const showPassword = ref(false);
     const showConfirmPassword = ref(false);
@@ -343,6 +381,7 @@ export default {
     const errorMessage = ref("");
     const errors = ref({});
     const availableSports = ref([]);
+    const isSportsDropdownOpen = ref(false);
 
     const form = reactive({
       name: "",
@@ -361,6 +400,15 @@ export default {
         availableSports.value = response.data.data || [];
       } catch (error) {
         console.error("Error loading sports:", error);
+      }
+    };
+
+    const toggleSport = (sportId) => {
+      const index = form.preferred_sports.indexOf(sportId);
+      if (index === -1) {
+        form.preferred_sports.push(sportId);
+      } else {
+        form.preferred_sports.splice(index, 1);
       }
     };
 
@@ -394,18 +442,73 @@ export default {
           // localStorage.setItem("user", JSON.stringify(result.data.user));
           auth.user.value = result.data.user;
 
+          addToast({
+            title: "Thành công",
+            message: "Đăng ký tài khoản thành công!",
+            type: "success",
+          });
+
           // Redirect to dashboard or intended page
           const redirectTo = router.currentRoute.value.query.redirect || "/";
           router.push(redirectTo);
         } else {
-          errorMessage.value = result.error;
+          errorMessage.value = result.error || "Đăng ký thất bại";
+          addToast({
+            title: "Lỗi",
+            message: errorMessage.value,
+            type: "error",
+          });
+
+          // Handle validation errors returned from useAuth
+          if (result.errors) {
+            errors.value = result.errors;
+            Object.values(result.errors)
+              .flat()
+              .forEach((err) => {
+                addToast({
+                  title: "Lỗi xác thực",
+                  message: err,
+                  type: "error",
+                });
+              });
+          }
         }
       } catch (error) {
         console.error("Register error:", error);
-        if (error.response?.data?.errors) {
-          errors.value = error.response.data.errors;
+
+        // Handle specific API error format
+        const responseData = error.response?.data;
+        if (responseData) {
+          // Display main message
+          if (responseData.message) {
+            addToast({
+              title: "Lỗi",
+              message: responseData.message,
+              type: "error",
+            });
+          }
+
+          // Display validation errors
+          if (responseData.errors) {
+            errors.value = responseData.errors;
+            Object.values(responseData.errors)
+              .flat()
+              .forEach((err) => {
+                addToast({
+                  title: "Lỗi xác thực",
+                  message: err,
+                  type: "error",
+                });
+              });
+          }
         } else {
-          errorMessage.value = "Có lỗi xảy ra trong quá trình đăng ký";
+          const msg = "Có lỗi xảy ra trong quá trình đăng ký";
+          errorMessage.value = msg;
+          addToast({
+            title: "Lỗi",
+            message: msg,
+            type: "error",
+          });
         }
       } finally {
         loading.value = false;
@@ -424,6 +527,8 @@ export default {
       errorMessage,
       errors,
       availableSports,
+      isSportsDropdownOpen,
+      toggleSport,
       handleRegister,
     };
   },
@@ -434,10 +539,8 @@ export default {
 /* Đảm bảo container fullscreen hoàn toàn */
 .register-container {
   min-height: 100vh;
-  height: 100vh;
-  width: 100vw;
+  width: 100%;
   margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
